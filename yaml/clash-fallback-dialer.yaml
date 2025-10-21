@@ -1,10 +1,20 @@
 # ========================
-# Clash-Fallback 优化配置
+# Clash-Fallback 链式代理
 # ========================
 
 # 机场节点订阅
 
 proxy-providers:
+
+  PolYun:
+    url: "机场订阅地址"  
+    type: http
+    interval: 86400
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+    proxy: 直连
 
   优速通:
     url: "机场订阅地址"  
@@ -16,16 +26,6 @@ proxy-providers:
       interval: 300
     proxy: 直连
 
-  火烧:
-    url: "机场订阅地址"
-    type: http
-    interval: 86400
-    health-check:
-      enable: true
-      url: https://www.gstatic.com/generate_204
-      interval: 300
-    proxy: 直连 
-    
   小牛:
     url: "机场订阅地址"
     type: http
@@ -34,9 +34,9 @@ proxy-providers:
       enable: true
       url: https://www.gstatic.com/generate_204
       interval: 300
-    proxy: 直连    
+    proxy: 直连   
 
-  PolYun:
+  火烧:
     url: "机场订阅地址"
     type: http
     interval: 86400
@@ -44,7 +44,7 @@ proxy-providers:
       enable: true
       url: https://www.gstatic.com/generate_204
       interval: 300
-    proxy: 直连
+    proxy: 直连   
 
   无界:
     url: "机场订阅地址"
@@ -94,11 +94,22 @@ proxy-providers:
       enable: true
       url: https://www.gstatic.com/generate_204
       interval: 300
-    proxy: 直连       
+    proxy: 直连    
+
 
 proxies:
   - {name: 直连, type: direct}
   - {name: 拒绝, type: reject}
+
+  - name:             # 落地节点命名
+    type: socks5      # 节点协议
+    server:            # 住宅IP 代理地址
+    port:              # 端口号
+    username:         # 用户名
+    password:         # 密码
+    udp: true
+    dialer-proxy: 香港-链式前置  # 指定前置代理节点组
+
 
 # ========================
 # 主要端口设置
@@ -241,6 +252,12 @@ proxy-groups:
     interval: 300
     filter: "^((?!(直连|拒绝)).)*$"
 
+  # 链式代理-前置-香港
+  - name: 香港-链式前置
+    type: select
+    include-all: true
+    filter: "(?=.*(广港|香港|HK|Hong Kong|🇭🇰|HongKong)).*$"
+
   # 香港组
   - name: 香港-故转
     type: fallback
@@ -261,6 +278,9 @@ proxy-groups:
     tolerance: 50
     interval: 300
     filter: "(?=.*(广港|香港|HK|Hong Kong|🇭🇰|HongKong)).*$"
+
+
+
  
   # 台湾组
   - name: 台湾-故转
@@ -330,13 +350,13 @@ proxy-groups:
   - name: 美国-手动
     type: select
     include-all: true
-    filter: "(?=.*(广美|US|美国|纽约|波特兰|达拉斯|俄勒|凤凰城|费利蒙|洛杉|圣何塞|圣克拉|西雅|芝加|🇺🇸|United States)).*$"
+    filter: "(?=.*(广美|美|US|纽约|波特兰|达拉斯|俄勒|凤凰城|费利蒙|拉斯|洛杉|圣何塞|圣克拉|西雅|芝加|🇺🇸|United States)).*$"
   - name: 美国-自动
     type: url-test
     include-all: true
     tolerance: 50
     interval: 300
-    filter: "(?=.*(广美|US|美国|纽约|波特兰|达拉斯|俄勒|凤凰城|费利蒙|洛杉|圣何塞|圣克拉|西雅|芝加|🇺🇸|United States)).*$"
+    filter: "(?=.*(广美|美|US|纽约|波特兰|达拉斯|俄勒|凤凰城|费利蒙|拉斯|洛杉|圣何塞|圣克拉|西雅|芝加|🇺🇸|United States)).*$"
 
   # 其他组
   - name: 其他-故转
@@ -349,14 +369,14 @@ proxy-groups:
   - name: 其他-手动
     type: select
     include-all: true
-    filter: "^((?!(直连|拒绝|广港|香港|HK|Hong Kong|🇭🇰|HongKong|广台|台湾|台灣|TW|Tai Wan|🇹🇼|🇨🇳|TaiWan|Taiwan|广日|日本|JP|川日|东京|大阪|泉日|埼玉|沪日|深日|🇯🇵|Japan|广新|新加坡|SG|坡|狮城|🇸🇬|Singapore|广美|US|美国|纽约|波特兰|达拉斯|俄勒|凤凰城|费利蒙|洛杉|圣何塞|圣克拉|西雅|芝加|🇺🇸|United States)).)*$"
+    filter: "^((?!(直连|拒绝|广港|香港|HK|Hong Kong|🇭🇰|HongKong|广台|台湾|台灣|TW|Tai Wan|🇹🇼|🇨🇳|TaiWan|Taiwan|广日|日本|JP|川日|东京|大阪|泉日|埼玉|沪日|深日|🇯🇵|Japan|广新|新加坡|SG|坡|狮城|🇸🇬|Singapore|广美|美|US|纽约|波特兰|达拉斯|俄勒|凤凰城|费利蒙|拉斯|洛杉|圣何塞|圣克拉|西雅|芝加|🇺🇸|United States)).)*$"
   
   - name: 其他-自动
     type: url-test
     include-all: true
     tolerance: 50
     interval: 300
-    filter: "^((?!(直连|拒绝|广港|香港|HK|Hong Kong|🇭🇰|HongKong|广台|台湾|台灣|TW|Tai Wan|🇹🇼|🇨🇳|TaiWan|Taiwan|广日|日本|JP|川日|东京|大阪|泉日|埼玉|沪日|深日|🇯🇵|Japan|广新|新加坡|SG|坡|狮城|🇸🇬|Singapore|广美|US|美国|纽约|波特兰|达拉斯|俄勒|凤凰城|费利蒙|洛杉|圣何塞|圣克拉|西雅|芝加|🇺🇸|United States)).)*$"
+    filter: "^((?!(直连|拒绝|广港|香港|HK|Hong Kong|🇭🇰|HongKong|广台|台湾|台灣|TW|Tai Wan|🇹🇼|🇨🇳|TaiWan|Taiwan|广日|日本|JP|川日|东京|大阪|泉日|埼玉|沪日|深日|🇯🇵|Japan|广新|新加坡|SG|坡|狮城|🇸🇬|Singapore|广美|美|US|纽约|波特兰|达拉斯|俄勒|凤凰城|费利蒙|拉斯|洛杉|圣何塞|圣克拉|西雅|芝加|🇺🇸|United States)).)*$"
 
 # ========================
 # 规则引擎（rules）
